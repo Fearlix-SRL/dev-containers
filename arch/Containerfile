@@ -1,0 +1,85 @@
+FROM docker.io/library/archlinux:latest
+RUN pacman-key --init
+RUN pacman -Sy --noconfirm archlinux-keyring && pacman -Syyu --noconfirm 
+RUN pacman -Sy --needed --noconfirm base-devel \
+  git \
+  openssh \
+  neovim \
+  nodejs \
+  go \
+  ripgrep \
+  cmake \
+  man \
+  sudo \
+  glu \
+  gtk3 \
+  ninja \
+  clang \
+  npm \
+  zenity \
+  delve \
+  fd \
+  ripgrep \
+  lazygit \
+  just \
+  wl-clipboard \
+  python-virtualenv \
+  unzip \
+  zip \
+  starship
+
+# user
+RUN useradd builduser -m
+RUN passwd -d builduser
+RUN printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
+USER builduser
+
+# paru
+WORKDIR /tmp
+RUN git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm
+RUN rm -rf /tmp/paru
+RUN paru -S --noconfirm visual-studio-code-bin
+RUN paru -S --noconfirm google-chrome
+
+# Android SDK
+ENV ANDROID_SDK_TOOLS_VERSION=8512546
+ENV ANDROID_PLATFORM_VERSION=33
+ENV ANDROID_BUILD_TOOLS_VERSION=33.0.0
+ENV ANDROID_HOME=/opt/android-sdk-linux
+ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
+
+RUN sudo pacman -S --noconfirm jre17-openjdk-headless
+RUN sudo mkdir /opt/android-sdk-linux
+RUN sudo chown -R builduser:builduser /opt/android-sdk-linux
+RUN curl -C - --output android-sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip \
+	&& unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools/ \
+	&& rm android-sdk-tools.zip \
+	&& yes | sdkmanager --licenses \
+	&& touch $HOME/.android/repositories.cfg \
+	&& sdkmanager platform-tools \
+	&& sdkmanager emulator \
+	&& sdkmanager "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" \
+	&& sdkmanager --install "cmdline-tools;latest" 
+# create emulator android	
+RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64" \
+	 && echo no | avdmanager create avd -n Android${ANDROID_PLATFORM_VERSION} -k "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64"
+
+# Flutter SDK
+ENV FLUTTER_CHANNEL="stable"
+ENV FLUTTER_VERSION="3.13.9"
+ENV FLUTTER_HOME=/opt/flutter
+ENV PATH=${PATH}:${FLUTTER_HOME}/bin
+
+RUN sudo mkdir /opt/flutter
+RUN sudo chown -R builduser:builduser /opt/flutter
+RUN curl -C - --output flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/${FLUTTER_CHANNEL}/linux/flutter_linux_${FLUTTER_VERSION}-${FLUTTER_CHANNEL}.tar.xz
+RUN tar -xf flutter.tar.xz -C /opt/
+RUN rm flutter.tar.xz
+RUN git config --global --add safe.directory /opt/flutter
+COPY ./flutter.sh /etc/profile.d/
+RUN yes | flutter doctor --android-licenses
+RUN flutter config --no-analytics
+RUN flutter update-packages
+
+RUN paru -Sc --noconfirm
