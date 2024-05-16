@@ -51,6 +51,7 @@ ENV ANDROID_PLATFORM_VERSION=34
 ENV ANDROID_BUILD_TOOLS_VERSION=34.0.0
 ENV ANDROID_HOME=/opt/android-sdk-linux
 ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
+ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
 
 RUN sudo pacman -S --noconfirm jdk17-openjdk
@@ -74,6 +75,7 @@ ENV FLUTTER_CHANNEL="stable"
 ENV FLUTTER_VERSION="3.22.0"
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
+ENV CHROME_EXECUTABLE=/usr/sbin/google-chrome-stable
 
 RUN sudo mkdir /opt/flutter
 RUN sudo chown -R builduser:builduser /opt/flutter
@@ -81,7 +83,6 @@ RUN curl -C - --output flutter.tar.xz https://storage.googleapis.com/flutter_inf
 RUN tar -xf flutter.tar.xz -C /opt/
 RUN rm flutter.tar.xz
 RUN git config --global --add safe.directory /opt/flutter
-COPY ./flutter.sh /etc/profile.d/
 RUN yes | flutter doctor --android-licenses
 RUN flutter config --no-analytics
 RUN flutter update-packages
