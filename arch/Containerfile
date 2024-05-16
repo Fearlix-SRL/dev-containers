@@ -61,7 +61,7 @@ RUN curl -C - --output android-sdk-tools.zip https://dl.google.com/android/repos
 	&& unzip -q android-sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools/ \
 	&& rm android-sdk-tools.zip \
 	&& yes | sdkmanager --licenses \
-	&& touch $HOME/.android/repositories.cfg \
+	&& touch $ANDROID_SDK_HOME/repositories.cfg \
 	&& sdkmanager platform-tools \
 	&& sdkmanager emulator \
 	&& sdkmanager "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" \
