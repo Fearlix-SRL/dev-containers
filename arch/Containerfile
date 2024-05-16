@@ -26,7 +26,11 @@ RUN pacman -Sy --needed --noconfirm base-devel \
   python-virtualenv \
   unzip \
   zip \
-  starship
+  starship \
+  alacritty \
+  yarn \
+  libpulse \
+  libbsd
 
 # user
 RUN useradd builduser -m
@@ -42,14 +46,14 @@ RUN paru -S --noconfirm visual-studio-code-bin
 RUN paru -S --noconfirm google-chrome
 
 # Android SDK
-ENV ANDROID_SDK_TOOLS_VERSION=8512546
-ENV ANDROID_PLATFORM_VERSION=33
-ENV ANDROID_BUILD_TOOLS_VERSION=33.0.0
+ENV ANDROID_SDK_TOOLS_VERSION=11076708
+ENV ANDROID_PLATFORM_VERSION=34
+ENV ANDROID_BUILD_TOOLS_VERSION=34.0.0
 ENV ANDROID_HOME=/opt/android-sdk-linux
 ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
 
-RUN sudo pacman -S --noconfirm jre17-openjdk-headless
+RUN sudo pacman -S --noconfirm jdk17-openjdk
 RUN sudo mkdir /opt/android-sdk-linux
 RUN sudo chown -R builduser:builduser /opt/android-sdk-linux
 RUN curl -C - --output android-sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip \
@@ -67,7 +71,7 @@ RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x
 
 # Flutter SDK
 ENV FLUTTER_CHANNEL="stable"
-ENV FLUTTER_VERSION="3.13.9"
+ENV FLUTTER_VERSION="3.22.0"
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
 
