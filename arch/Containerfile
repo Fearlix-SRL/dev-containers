@@ -30,7 +30,8 @@ RUN pacman -Sy --needed --noconfirm base-devel \
   alacritty \
   yarn \
   libpulse \
-  libbsd
+  libbsd \
+  otf-firamono-nerd
 
 # user
 RUN useradd builduser -m
@@ -40,8 +41,8 @@ USER builduser
 
 # paru
 WORKDIR /tmp
-RUN git clone https://aur.archlinux.org/paru.git && cd paru && makepkg -si --noconfirm
-RUN rm -rf /tmp/paru
+RUN git clone https://aur.archlinux.org/paru-bin.git && cd paru-bin && makepkg -si --noconfirm
+RUN rm -rf /tmp/paru-bin
 RUN paru -S --noconfirm visual-studio-code-bin
 RUN paru -S --noconfirm google-chrome
 
@@ -72,7 +73,7 @@ RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x
 
 # Flutter SDK
 ENV FLUTTER_CHANNEL="stable"
-ENV FLUTTER_VERSION="3.22.0"
+ENV FLUTTER_VERSION="3.22.3"
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
 ENV CHROME_EXECUTABLE=/usr/sbin/google-chrome-stable
@@ -86,5 +87,11 @@ RUN git config --global --add safe.directory /opt/flutter
 RUN yes | flutter doctor --android-licenses
 RUN flutter config --no-analytics
 RUN flutter update-packages
+
+# Podman
+ENV DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh
 
 RUN paru -Sc --noconfirm
