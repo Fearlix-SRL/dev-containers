@@ -1,0 +1,3 @@
+FROM fedora-toolbox:40
+RUN dnf install -y ansible neovim
+RUN dnf clean all

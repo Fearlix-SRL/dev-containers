@@ -1,0 +1,7 @@
+FROM docker.io/library/archlinux:latest
+RUN pacman-key --init
+RUN pacman -Sy --noconfirm archlinux-keyring && pacman -Syyu --noconfirm 
+RUN pacman -Sy --needed --noconfirm dbeaver mariadb-clients
+ENV GTK_THEME=adwaita
+COPY ./post-install.sh /usr/local/bin/post-install.sh
+RUN pacman -Sc --noconfirm
