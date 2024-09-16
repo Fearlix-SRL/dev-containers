@@ -90,6 +90,8 @@ RUN flutter update-packages
 
 # Podman
 ENV DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+USER root
+RUN echo "alias podman='distrobox-host-exec podman'" > /etc/profile.d/podman.sh
 
 # Post Install
 COPY ./post-install.sh /usr/local/bin/post-install.sh
