@@ -1,4 +1,5 @@
 FROM quay.io/toolbx/ubuntu-toolbox:24.04
+
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y libasound2t64 software-properties-common
 
@@ -10,3 +11,6 @@ RUN xdg-settings set default-web-browser $(ls /usr/share/applications/ | grep -w
 RUN add-apt-repository ppa:chrdevs/figma
 RUN apt-key adv --recv-key --keyserver keyserver.ubuntu.com 70F3445E637983CC
 RUN apt-get update && apt-get install figma-linux -y
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh
