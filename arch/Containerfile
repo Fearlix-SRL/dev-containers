@@ -73,7 +73,7 @@ RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x
 
 # Flutter SDK
 ENV FLUTTER_CHANNEL="stable"
-ENV FLUTTER_VERSION="3.22.3"
+ENV FLUTTER_VERSION="3.24.4"
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
 ENV CHROME_EXECUTABLE=/usr/sbin/google-chrome-stable
