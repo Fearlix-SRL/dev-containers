@@ -55,6 +55,7 @@ ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
 
+RUN paru -S --noconfirm android-studio
 RUN sudo pacman -S --noconfirm jdk17-openjdk
 RUN sudo mkdir /opt/android-sdk-linux
 RUN sudo chown -R builduser:builduser /opt/android-sdk-linux
