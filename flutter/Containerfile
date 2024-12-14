@@ -1,4 +1,4 @@
-FROM registry.lucapatarca.cloud/base
+FROM ghcr.io/fearlix-srl/base:latest
 
 RUN dnf install -y \
   mesa-libGLU \

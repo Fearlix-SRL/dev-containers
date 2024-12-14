@@ -1,8 +1,10 @@
-name: build-base
+name: build-flutter
 
 on:
-  push:
-    branches: [ 'main' ]
+  workflow_run:
+    workflows: ['build-base']
+    types:
+      - completed
   workflow_dispatch:
 
 env:
@@ -36,14 +38,14 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           flavor: latest=true
-          images: ${{ env.REGISTRY }}/fearlix-srl/base
+          images: ${{ env.REGISTRY }}/fearlix-srl/flutter
 
       - name: Build and push Base Image
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
-          context: ./base
-          file: ./base/Containerfile
+          context: ./flutter
+          file: ./flutter/Containerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
