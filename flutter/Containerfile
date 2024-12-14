@@ -9,8 +9,6 @@ RUN dnf install -y \
   ninja-build && \
   dnf clean all
 
-USER builduser
-
 # Android SDK
 ENV ANDROID_SDK_TOOLS_VERSION=11076708
 ENV ANDROID_PLATFORM_VERSION=34
@@ -20,8 +18,9 @@ ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
 
-RUN sudo mkdir /opt/android-sdk-linux
-RUN sudo chown -R builduser:builduser /opt/android-sdk-linux
+RUN mkdir /opt/android-sdk-linux && \
+  chown -R builduser:builduser /opt/android-sdk-linux
+USER builduser
 RUN curl -C - --output /tmp/android-sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip \
 	&& unzip -q /tmp/android-sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools/ \
 	&& rm /tmp/android-sdk-tools.zip \
@@ -43,8 +42,10 @@ ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
 ENV CHROME_EXECUTABLE=/usr/bin/chromium-browser
 
-RUN sudo mkdir /opt/flutter && \
-  sudo chown -R builduser:builduser /opt/flutter
+USER root
+RUN mkdir /opt/flutter && \
+  chown -R builduser:builduser /opt/flutter
+USER builduser
 RUN curl -C - --output /tmp/flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/${FLUTTER_CHANNEL}/linux/flutter_linux_${FLUTTER_VERSION}-${FLUTTER_CHANNEL}.tar.xz && \
   tar -xf /tmp/flutter.tar.xz -C /opt/ && \
   rm /tmp/flutter.tar.xz

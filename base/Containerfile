@@ -20,4 +20,4 @@ RUN wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraMo
 # user
 RUN useradd builduser -m && \
   passwd -d builduser && \
-  printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
+  printf 'builduser ALL=(ALL) NOPASSWD:ALL\n' | tee -a /etc/sudoers
