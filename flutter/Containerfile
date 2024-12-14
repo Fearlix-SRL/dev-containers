@@ -1,0 +1,54 @@
+FROM registry.lucapatarca.cloud/base
+
+RUN dnf install -y \
+  mesa-libGLU \
+  clang \
+  cmake \
+  gtk3-devel \
+  java-17-openjdk \
+  ninja-build && \
+  dnf clean all
+
+USER builduser
+
+# Android SDK
+ENV ANDROID_SDK_TOOLS_VERSION=11076708
+ENV ANDROID_PLATFORM_VERSION=34
+ENV ANDROID_BUILD_TOOLS_VERSION=34.0.0
+ENV ANDROID_HOME=/opt/android-sdk-linux
+ENV ANDROID_SDK_ROOT="$ANDROID_HOME"
+ENV ANDROID_SDK_HOME="$ANDROID_HOME"
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator
+
+RUN sudo mkdir /opt/android-sdk-linux
+RUN sudo chown -R builduser:builduser /opt/android-sdk-linux
+RUN curl -C - --output /tmp/android-sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip \
+	&& unzip -q /tmp/android-sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools/ \
+	&& rm /tmp/android-sdk-tools.zip \
+	&& yes | sdkmanager --licenses \
+	&& touch $ANDROID_SDK_HOME/repositories.cfg \
+	&& sdkmanager platform-tools \
+	&& sdkmanager emulator \
+	&& sdkmanager "platforms;android-${ANDROID_PLATFORM_VERSION}" "build-tools;$ANDROID_BUILD_TOOLS_VERSION" \
+	&& sdkmanager --install "cmdline-tools;latest" 
+# create emulator android	
+RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64" \
+	 && echo no | avdmanager create avd -n Android${ANDROID_PLATFORM_VERSION} -k "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64"
+
+
+# Flutter SDK
+ENV FLUTTER_CHANNEL="stable"
+ENV FLUTTER_VERSION="3.24.4"
+ENV FLUTTER_HOME=/opt/flutter
+ENV PATH=${PATH}:${FLUTTER_HOME}/bin
+ENV CHROME_EXECUTABLE=/usr/bin/chromium-browser
+
+RUN sudo mkdir /opt/flutter && \
+  sudo chown -R builduser:builduser /opt/flutter
+RUN curl -C - --output /tmp/flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/${FLUTTER_CHANNEL}/linux/flutter_linux_${FLUTTER_VERSION}-${FLUTTER_CHANNEL}.tar.xz && \
+  tar -xf /tmp/flutter.tar.xz -C /opt/ && \
+  rm /tmp/flutter.tar.xz
+RUN git config --global --add safe.directory /opt/flutter
+RUN yes | flutter doctor --android-licenses && \
+  flutter config --no-analytics && \
+  flutter update-packages
