@@ -1,0 +1,27 @@
+name: build-base
+
+on:
+  push:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  base:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build Base
+        uses: ./.github/workflows/_build-image.yml@main
+        with:
+          image-name: base
+
+  flutter:
+    needs: base
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build Flutter
+        uses: ./.github/workflows/_build-image.yml@main
+        with:
+          image-name: flutter

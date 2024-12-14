@@ -1,22 +1,22 @@
-name: build-base
+name: build-image
 
 on:
-  push:
-    branches: [ 'main' ]
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
-  build:
-
+  build-base:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -36,14 +36,14 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           flavor: latest=true
-          images: ${{ env.REGISTRY }}/fearlix-srl/base
+          images: ${{ env.REGISTRY }}/fearlix-srl/${{ inputs.image-name }}
 
-      - name: Build and push Base Image
+      - name: Build and push ${{ inputs.image-name }} Image
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
-          context: ./base
-          file: ./base/Containerfile
+          context: ./${{ inputs.image-name }}
+          file: ./${{ inputs.image-name }}/Containerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
