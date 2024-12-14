@@ -1,0 +1,15 @@
+FROM fedora-toolbox:41
+
+RUN dnf install -y mariadb
+
+WORKDIR /tmp
+RUN wget -O mongodb-tools.rpm https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel93-x86_64-100.10.0.rpm && \
+  dnf install -y mongodb-tools.rpm && \
+  rm mongodb-tools.rpm
+
+RUN wget -O dbeaver.rpm https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm && \
+  dnf install -y dbeaver.rpm && \
+  rm dbeaver.rpm
+
+ENV GTK_THEME=adwaita
+COPY ./post-install.sh /usr/local/bin/post-install.sh

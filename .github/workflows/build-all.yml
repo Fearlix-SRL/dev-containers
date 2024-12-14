@@ -18,6 +18,15 @@ jobs:
     with:
       image-name: base
 
+  database:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/_build-image.yml
+    with:
+      image-name: database
+
   flutter:
     permissions:
       contents: read

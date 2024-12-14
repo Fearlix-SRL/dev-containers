@@ -53,3 +53,6 @@ RUN git config --global --add safe.directory /opt/flutter
 RUN yes | flutter doctor --android-licenses && \
   flutter config --no-analytics && \
   flutter update-packages
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh
