@@ -10,24 +10,12 @@ env:
 
 jobs:
   base:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Build Base
-        uses: ./.github/workflows/_build-image.yml
-        with:
-          image-name: base
+    uses: ./.github/workflows/_build-image.yml
+    with:
+      image-name: base
 
   flutter:
     needs: base
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Build Flutter
-        uses: ./.github/workflows/_build-image.yml
-        with:
-          image-name: flutter
+    uses: ./.github/workflows/_build-image.yml
+    with:
+      image-name: flutter
