@@ -1,6 +1,6 @@
 FROM registry.fedoraproject.org/fedora-toolbox:41
 
-RUN dnf install -y mariadb
+RUN dnf install -y mariadb eclipse-swt
 
 WORKDIR /tmp
 RUN wget -O mongodb-tools.rpm https://fastdl.mongodb.org/tools/db/mongodb-database-tools-rhel93-x86_64-100.10.0.rpm && \
@@ -10,6 +10,8 @@ RUN wget -O mongodb-tools.rpm https://fastdl.mongodb.org/tools/db/mongodb-databa
 RUN wget -O dbeaver.rpm https://dbeaver.io/files/dbeaver-ce-latest-stable.x86_64.rpm && \
   dnf install -y dbeaver.rpm && \
   rm dbeaver.rpm
+
+RUN sed -i 's/Path=.*//' /usr/share/applications/dbeaver-ce.desktop
 
 ENV GTK_THEME=adwaita
 COPY ./post-install.sh /usr/local/bin/post-install.sh
