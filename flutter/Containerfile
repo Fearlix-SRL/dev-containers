@@ -6,6 +6,7 @@ RUN dnf install -y \
   cmake \
   gtk3-devel \
   java-17-openjdk \
+  java-17-openjdk-devel \
   ninja-build && \
   dnf clean all
 
