@@ -33,6 +33,7 @@ RUN curl -C - --output /tmp/android-sdk-tools.zip https://dl.google.com/android/
 # create emulator android	
 RUN  sdkmanager "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64" \
 	 && echo no | avdmanager create avd -n Android${ANDROID_PLATFORM_VERSION} -k "system-images;android-${ANDROID_PLATFORM_VERSION};google_apis;x86_64"
+COPY ./config.ini ${ANDROID_HOME}/.android/avd/Android34.avd/config.ini
 
 
 # Flutter SDK
