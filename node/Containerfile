@@ -2,3 +2,6 @@ FROM ghcr.io/fearlix-srl/base:latest
 RUN dnf install -y \
     yarn && \
     dnf clean all
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh

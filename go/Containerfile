@@ -11,3 +11,7 @@ RUN dnf install -y \
     dnf clean all
 USER builduser
 RUN go telemetry off
+RUN go install -v github.com/go-delve/delve/cmd/dlv@latest
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh
