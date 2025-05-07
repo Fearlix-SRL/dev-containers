@@ -39,7 +39,7 @@ COPY ./config.ini ${ANDROID_HOME}/.android/avd/Android34.avd/config.ini
 
 # Flutter SDK
 ENV FLUTTER_CHANNEL="stable"
-ENV FLUTTER_VERSION="3.24.4"
+ENV FLUTTER_VERSION="3.29.2"
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=${PATH}:${FLUTTER_HOME}/bin
 ENV CHROME_EXECUTABLE=/usr/bin/chromium-browser
