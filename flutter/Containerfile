@@ -1,12 +1,13 @@
 FROM ghcr.io/fearlix-srl/base:latest
 
+RUN dnf install -y adoptium-temurin-java-repository && \
+  dnf config-manager setopt adoptium-temurin-java-repository.enabled=1
 RUN dnf install -y \
   mesa-libGLU \
   clang \
   cmake \
   gtk3-devel \
-  java-17-openjdk \
-  java-17-openjdk-devel \
+  temurin-17-jdk \
   ninja-build && \
   dnf clean all
 
