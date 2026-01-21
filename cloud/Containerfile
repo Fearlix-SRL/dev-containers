@@ -1,0 +1,13 @@
+FROM ghcr.io/fearlix-srl/base:latest
+RUN wget -O- https://rpm.releases.hashicorp.com/fedora/hashicorp.repo | sudo tee /etc/yum.repos.d/hashicorp.repo
+RUN dnf install -y \
+    terraform && \
+    dnf clean all
+WORKDIR /tmp
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -r awscliv2.zip aws/
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh

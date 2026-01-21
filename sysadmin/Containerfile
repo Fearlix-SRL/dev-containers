@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora-toolbox:42
+FROM ghcr.io/fearlix-srl/base:latest
 RUN dnf install -y \
     ansible \
     neovim &&\
