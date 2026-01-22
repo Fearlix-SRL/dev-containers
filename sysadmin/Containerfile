@@ -1,5 +1,0 @@
-FROM ghcr.io/fearlix-srl/base:latest
-RUN dnf install -y \
-    ansible \
-    neovim &&\
-    dnf clean all

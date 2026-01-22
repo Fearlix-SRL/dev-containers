@@ -1,7 +1,7 @@
 FROM ghcr.io/fearlix-srl/base:latest
 RUN wget -O- https://rpm.releases.hashicorp.com/fedora/hashicorp.repo | sudo tee /etc/yum.repos.d/hashicorp.repo
 RUN dnf install -y \
-    terraform && \
+    terraform ansible && \
     dnf clean all
 WORKDIR /tmp
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
