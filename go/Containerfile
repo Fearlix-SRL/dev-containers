@@ -3,6 +3,7 @@ ENV GOPATH=/usr/local/lib/go
 ENV GOCACHE=/var/cache/go
 ENV GOENV=/usr/lib/golang/go.env
 ENV GOMODCACHE=${GOPATH}/pkg/mod
+ENV PATH=${PATH}:${GOPATH}/bin
 RUN mkdir -p ${GOPATH} ${GOCACHE} ${GOMODCACHE}
 RUN chown -R builduser:builduser ${GOCACHE} ${GOPATH} ${GOMODCACHE}
 RUN chmod -R 755 ${GOCACHE} ${GOPATH} ${GOMODCACHE}
@@ -11,7 +12,8 @@ RUN dnf install -y \
     dnf clean all
 USER builduser
 RUN go telemetry off
-RUN go install -v github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
 # Post Install
 COPY ./post-install.sh /usr/local/bin/post-install.sh
