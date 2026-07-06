@@ -1,9 +1,15 @@
 name: build-base
 
 on:
+  schedule:
+    - cron:
+        "00 06 */7 * *"
   push:
-    branches: [ 'main' ]
+    paths-ignore:
+      - "**.md"
+  pull_request:
   workflow_dispatch:
+
 
 env:
   REGISTRY: ghcr.io
