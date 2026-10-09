@@ -1,0 +1,8 @@
+FROM ghcr.io/fearlix-srl/base:latest
+RUN dnf install -y \
+    dotnet-sdk-8.0 \
+    dotnet-sdk-9.0 && \
+    dnf clean all
+
+# Post Install
+COPY ./post-install.sh /usr/local/bin/post-install.sh

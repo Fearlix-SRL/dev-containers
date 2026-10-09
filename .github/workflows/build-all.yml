@@ -72,3 +72,13 @@ jobs:
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: cloud
+
+  dotnet:
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    needs: base
+    uses: ./.github/workflows/_build-image.yml
+    with:
+      image-name: dotnet
