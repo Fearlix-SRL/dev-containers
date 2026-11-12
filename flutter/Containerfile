@@ -4,6 +4,7 @@ RUN dnf install -y adoptium-temurin-java-repository && \
   dnf config-manager setopt adoptium-temurin-java-repository.enabled=1
 RUN dnf install -y \
   mesa-libGLU \
+  chromium \
   clang \
   cmake \
   gtk3-devel \

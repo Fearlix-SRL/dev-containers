@@ -12,8 +12,7 @@ RUN dnf install -y neovim \
   code \
   lazygit \
   gh \
-  alacritty \
-  chromium && \
+  alacritty && \
   dnf clean all
 
 RUN wget https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz -C /usr/local/bin/
@@ -24,6 +23,10 @@ RUN wget https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraMo
 RUN useradd builduser -m && \
   passwd -d builduser && \
   printf 'builduser ALL=(ALL) NOPASSWD:ALL\n' | tee -a /etc/sudoers
+
+# Browser: apri i link nel browser predefinito dell'host
+RUN ln -sf /usr/bin/distrobox-host-exec /usr/local/bin/xdg-open
+ENV BROWSER=xdg-open
 
 # Podman
 ENV DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
