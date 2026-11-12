@@ -57,7 +57,7 @@ Database tools and GUI for managing databases.
 Cloud infrastructure and deployment tools.
 
 **Includes**:
-- Terraform (Infrastructure as Code)
+- OpenTofu (Infrastructure as Code, Terraform-compatible)
 - Ansible (Configuration management)
 - AWS CLI (Amazon Web Services)
 
