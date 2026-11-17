@@ -6,6 +6,10 @@ on:
       image-name:
         required: true
         type: string
+      no-cache:
+        required: false
+        type: boolean
+        default: false
 
 env:
   REGISTRY: ghcr.io
@@ -44,7 +48,11 @@ jobs:
         with:
           context: ./${{ inputs.image-name }}
           file: ./${{ inputs.image-name }}/Containerfile
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
+          pull: true
+          no-cache: ${{ inputs.no-cache || github.event_name == 'schedule' }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/fearlix-srl/${{ inputs.image-name }}:buildcache
+          cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}/fearlix-srl/{1}:buildcache,mode=max', env.REGISTRY, inputs.image-name) || '' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 

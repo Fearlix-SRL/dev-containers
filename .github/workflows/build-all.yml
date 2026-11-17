@@ -9,76 +9,166 @@ on:
       - "**.md"
   pull_request:
   workflow_dispatch:
+    inputs:
+      no-cache:
+        description: Ignora la cache dei layer
+        type: boolean
+        default: false
 
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      base: ${{ steps.out.outputs.base }}
+      database: ${{ steps.out.outputs.database }}
+      flutter: ${{ steps.out.outputs.flutter }}
+      go: ${{ steps.out.outputs.go }}
+      node: ${{ steps.out.outputs.node }}
+      cloud: ${{ steps.out.outputs.cloud }}
+      dotnet: ${{ steps.out.outputs.dotnet }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v4.0.3
+        with:
+          filters: |
+            workflows:
+              - '.github/workflows/**'
+            base:
+              - 'base/**'
+            database:
+              - 'database/**'
+            flutter:
+              - 'flutter/**'
+            go:
+              - 'go/**'
+            node:
+              - 'node/**'
+            cloud:
+              - 'cloud/**'
+            dotnet:
+              - 'dotnet/**'
+
+      # schedule/workflow_dispatch: build everything.
+      # Children of base are rebuilt when base or the workflows change.
+      - name: Compute images to build
+        id: out
+        env:
+          ALL: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
+          WORKFLOWS: ${{ steps.filter.outputs.workflows }}
+          BASE: ${{ steps.filter.outputs.base }}
+          DATABASE: ${{ steps.filter.outputs.database }}
+          FLUTTER: ${{ steps.filter.outputs.flutter }}
+          GO: ${{ steps.filter.outputs.go }}
+          NODE: ${{ steps.filter.outputs.node }}
+          CLOUD: ${{ steps.filter.outputs.cloud }}
+          DOTNET: ${{ steps.filter.outputs.dotnet }}
+        run: |
+          all=false
+          [ "$ALL" = true ] || [ "$WORKFLOWS" = true ] && all=true
+          emit() { # name own-changed depends-on-base
+            r=false
+            { [ "$all" = true ] || [ "$2" = true ] || { [ "$3" = true ] && [ "$BASE" = true ]; }; } && r=true
+            echo "$1=$r" >> "$GITHUB_OUTPUT"
+          }
+          emit base "$BASE" false
+          emit database "$DATABASE" false
+          emit flutter "$FLUTTER" true
+          emit go "$GO" true
+          emit node "$NODE" true
+          emit cloud "$CLOUD" true
+          emit dotnet "$DOTNET" true
+
   base:
     permissions:
       contents: read
       packages: write
       id-token: write
+    needs: changes
+    if: ${{ needs.changes.outputs.base == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: base
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   database:
     permissions:
       contents: read
       packages: write
       id-token: write
+    needs: changes
+    if: ${{ needs.changes.outputs.database == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: database
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   flutter:
     permissions:
       contents: read
       packages: write
       id-token: write
-    needs: base
+    needs: [changes, base]
+    if: ${{ !cancelled() && needs.base.result != 'failure' && needs.base.result != 'cancelled' && needs.changes.outputs.flutter == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: flutter
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   go:
     permissions:
       contents: read
       packages: write
       id-token: write
-    needs: base
+    needs: [changes, base]
+    if: ${{ !cancelled() && needs.base.result != 'failure' && needs.base.result != 'cancelled' && needs.changes.outputs.go == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: go
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   node:
     permissions:
       contents: read
       packages: write
       id-token: write
-    needs: base
+    needs: [changes, base]
+    if: ${{ !cancelled() && needs.base.result != 'failure' && needs.base.result != 'cancelled' && needs.changes.outputs.node == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: node
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   cloud:
     permissions:
       contents: read
       packages: write
       id-token: write
-    needs: base
+    needs: [changes, base]
+    if: ${{ !cancelled() && needs.base.result != 'failure' && needs.base.result != 'cancelled' && needs.changes.outputs.cloud == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: cloud
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
 
   dotnet:
     permissions:
       contents: read
       packages: write
       id-token: write
-    needs: base
+    needs: [changes, base]
+    if: ${{ !cancelled() && needs.base.result != 'failure' && needs.base.result != 'cancelled' && needs.changes.outputs.dotnet == 'true' }}
     uses: ./.github/workflows/_build-image.yml
     with:
       image-name: dotnet
+      no-cache: ${{ github.event.inputs.no-cache == 'true' }}
