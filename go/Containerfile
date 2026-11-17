@@ -8,7 +8,8 @@ RUN mkdir -p ${GOPATH} ${GOCACHE} ${GOMODCACHE}
 RUN chown -R builduser:builduser ${GOCACHE} ${GOPATH} ${GOMODCACHE}
 RUN chmod -R 755 ${GOCACHE} ${GOPATH} ${GOMODCACHE}
 RUN dnf install -y \
-    golang && \
+    golang \
+    golangci-lint && \
     dnf clean all
 USER builduser
 RUN go telemetry off
